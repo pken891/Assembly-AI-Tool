@@ -19,6 +19,6 @@ This software is a lightweight, portable AI routing engine designed to run entir
 - [ ] **Phase 4: Unified Streamlit Dashboard**
   - **Feature:** Wrap the backend Python logic into a local browser-based Streamlit web application. The UI will bundle the model selection dropdowns, real-time token/cost metrics, and API key management into a single dashboard launched directly from the master batch script.
   - **Significance:** Eliminates the need for terminal-based navigation, providing a clean, accessible graphical interface that unifies all diagnostic data and chat interactions in one window.
-   [ ] **Phase 5: Wrap all into one application that can be downloaded/used on local machine instead of USB**
+- [ ] **Phase 5: Wrap all into one application that can be downloaded/used on local machine instead of USB**
   - **Feature:** 
   - **Significance:**
