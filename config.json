@@ -1,0 +1,31 @@
+{
+  "models": [
+    {
+      "display_name": "Qwen 2.5 Coder 7B (Local)",
+      "litellm_id": "openai/qwen2.5",
+      "api_base": "http://localhost:8080/v1",
+      "api_key_env": "LOCAL_DUMMY_KEY",
+      "input_cost_per_1k": 0.00,
+      "max_context": 32000,
+      "tags": ["offline", "fast", "16gb-ram-safe"]
+    },
+    {
+      "display_name": "Qwen 3 Coder 30B (Local)",
+      "litellm_id": "openai/qwen3",
+      "api_base": "http://localhost:8080/v1",
+      "api_key_env": "LOCAL_DUMMY_KEY",
+      "input_cost_per_1k": 0.00,
+      "max_context": 32000,
+      "tags": ["offline", "heavy", "24gb-ram-required"]
+    },
+    {
+      "display_name": "Gemini 1.5 Flash",
+      "litellm_id": "gemini/gemini-1.5-flash",
+      "api_base": null,
+      "api_key_env": "GEMINI_API_KEY",
+      "input_cost_per_1k": 0.000075,
+      "max_context": 1000000,
+      "tags": ["online", "cloud", "fast"]
+    }
+  ]
+}
