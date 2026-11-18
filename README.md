@@ -5,7 +5,7 @@ This software is a lightweight, portable AI routing engine designed to run entir
 ## Development Roadmap
 
 - [ ] **Phase 1: Local Execution & Routing**
-  - **Feature:** Implement `gateway.py` to route prompts to existing local endpoints configured in the `windows_start.bat` script, selecting between the 7B model for 16GB hardware constraints and the 30B model for 24GB+ environments.
+  - **Feature:** Implement `gateway.py` to route prompts to existing local endpoints configured confi.json to detect and respond to users inputted models on their local machine, as well as connect there online models
   - **Significance:** Establishes the foundational offline pipeline, ensuring the core chat and prompt execution loop works entirely locally without external dependencies.
 
 - [ ] **Phase 2: Token Evaluation & Cost Approximation**
