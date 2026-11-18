@@ -13,7 +13,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # ==========================================
-# NETWORK & CONNECTIVITY TOGGLE (PHASE 3)
+# NETWORK & CONNECTIVITY TOGGLE
 # ==========================================
 def check_internet(host="8.8.8.8", port=53, timeout=1):
     """
@@ -49,21 +49,21 @@ def get_available_models(models, online=True):
     """
     Filters the model list based on network connectivity.
     Process: Iterates through the models list. If offline, it drops models containing the "online" tag.
-    Purpose: Prevents the user from attempting to route a prompt to an unreachable cloud API (like Gemini) when offline.
+    Purpose: Prevents the user from attempting to route a prompt to an unreachable cloud API when offline.
     """
     if not online:
         return [m for m in models if "online" not in m.get("tags", [])]
     return models
 
 # ==========================================
-# EVALUATION & COST APPROXIMATION (PHASE 2)
+# EVALUATION & COST APPROXIMATION 
 # ==========================================
 def evaluate_prompt(prompt, models):
     """
     Calculates the token size of the prompt and estimates the execution cost.
-    Process: Uses tiktoken (cl100k_base encoding) to count tokens, checks against max limits, 
-             and multiplies the count by the model's cost rate.
-    Purpose: Prevents local hardware context window overflows and provides transparency for cloud API costs.
+    Process: Uses tiktoken to count tokens. Now displays both token cost and dollar cost 
+             side-by-side, comparing the token count against the model's max context limit.
+    Purpose: Prevents context window overflows and allows the user to see exact token consumption before routing.
     """
     encoder = tiktoken.get_encoding("cl100k_base")
     token_count = len(encoder.encode(prompt))
@@ -80,16 +80,20 @@ def evaluate_prompt(prompt, models):
         estimated_cost = (token_count / 1000) * model["input_cost_per_1k"]
         
         print(f"[{idx + 1}] {model['display_name']}")
+        # Displaying Token Cost vs Max Context explicitly
+        print(f"    Token Cost:  {token_count} / {model['max_context']} max")
+        
+        # Displaying Dollar Cost
         if estimated_cost == 0:
-            print(f"    Cost: $0.00 (Local Compute){context_warning}")
+            print(f"    Dollar Cost: $0.00 (Local Compute){context_warning}")
         else:
-            print(f"    Cost: ${estimated_cost:.6f}{context_warning}")
+            print(f"    Dollar Cost: ${estimated_cost:.6f}{context_warning}")
             
     print("-" * 50)
     return token_count
 
 # ==========================================
-# EXECUTION & ROUTING (PHASE 1 & 3)
+# EXECUTION & ROUTING
 # ==========================================
 def execute_prompt(prompt, model_config):
     """
@@ -152,34 +156,31 @@ if __name__ == "__main__":
         if user_prompt.lower() == 'exit':
             break
             
-        # 4. Web Search Intercept (Phase 3)
-        # If online and the prompt contains "@search", fetch live web data before evaluating.
+        # 4. Web Search Intercept 
         if is_online and "@search" in user_prompt:
             print("\n[Scraping live data...]")
             try:
-                # Import your existing search agent
                 import search_agent 
-                
-                # Extract the query, removing the trigger word
                 search_query = user_prompt.replace("@search", "").strip()
-                
-                # IMPORTANT: Replace 'perform_search' with the actual function name inside your search_agent.py
                 live_context = search_agent.perform_search(search_query) 
-                
-                # Append the search results transparently to the prompt payload
                 user_prompt = f"Background web information:\n{live_context}\n\nUser Request: {search_query}"
             except ImportError:
                 print("[Error] search_agent.py not found in the src/ directory. Bypassing search.")
             except AttributeError:
                 print("[Error] Function 'perform_search' not found in search_agent.py. Update function name.")
 
-        # 5. Analyze tokens and display cost
+        # 5. Analyze tokens and display detailed token/dollar cost
         evaluate_prompt(user_prompt, active_models)
         
-        # 6. Capture selection and route to execution
+        # 6. Capture selection, with a new option to revise the prompt if token cost is too high
         try:
-            choice = input("\nSelect model number (or press Enter to cancel): ")
+            choice = input("\nSelect model number (or type 'edit' to revise prompt, Enter to cancel): ")
+            
             if not choice.strip():
+                continue
+                
+            if choice.lower() == 'edit':
+                print("[Prompt discarded. Ready for new input.]")
                 continue
                 
             selection_index = int(choice) - 1
